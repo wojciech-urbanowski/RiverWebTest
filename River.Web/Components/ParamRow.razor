@@ -1,0 +1,23 @@
+@* Wiersz parametru: opis na górze, pole liczbowe i jednostka obok siebie. *@
+
+<MudStack Spacing="0">
+    <MudText Typo="Typo.caption">@Label</MudText>
+    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+        <MudNumericField T="double"
+                         Value="Value"
+                         ValueChanged="ValueChanged"
+                         Variant="Variant.Outlined"
+                         Margin="Margin.Dense"
+                         Immediate="true"
+                         HideSpinButtons="true"
+                         Style="max-width: 140px" />
+        <MudText Typo="Typo.body2" Style="white-space: nowrap;">@Unit</MudText>
+    </MudStack>
+</MudStack>
+
+@code {
+    [Parameter, EditorRequired] public string Label { get; set; } = "";
+    [Parameter, EditorRequired] public string Unit { get; set; } = "";
+    [Parameter] public double Value { get; set; }
+    [Parameter] public EventCallback<double> ValueChanged { get; set; }
+}

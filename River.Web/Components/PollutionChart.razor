@@ -1,0 +1,87 @@
+@* Wykres profilu rzeki — odpowiednik chart1 z FormMain.
+   Trzy serie liniowe: O2, BZT5, N-NH3 wzdłuż łącznej osi X [km],
+   konkatenowane przez wszystkie odcinki, dla których Plot=true (jak plotVal w oryginale). *@
+
+@using Plotly.Blazor.LayoutLib
+@using Plotly.Blazor.Traces
+@using Plotly.Blazor.Traces.ScatterLib
+
+<div style="flex: 1; min-height: 0; height: 100%; width: 100%;">
+    <PlotlyChart @ref="_chart"
+                 Config="_config"
+                 Layout="_layout"
+                 Data="_data"
+                 style="height: 100%; width: 100%" />
+</div>
+
+@code {
+    [Parameter] public IReadOnlyList<SegmentInput> Segments { get; set; } = Array.Empty<SegmentInput>();
+    [Parameter] public IReadOnlyList<SegmentResult> Results { get; set; } = Array.Empty<SegmentResult>();
+
+    private PlotlyChart _chart = default!;
+    private bool _dirty = true;
+
+    private readonly Plotly.Blazor.Config _config = new()
+    {
+        Responsive = true,
+        DisplayLogo = false
+    };
+
+    private readonly Plotly.Blazor.Layout _layout = new()
+    {
+        AutoSize = true,
+        Margin = new Plotly.Blazor.LayoutLib.Margin { L = 50, R = 20, T = 20, B = 50 },
+        XAxis = new List<XAxis> { new() { Title = new Plotly.Blazor.LayoutLib.XAxisLib.Title { Text = Units.DistanceAxis } } },
+        YAxis = new List<YAxis> { new() { Title = new Plotly.Blazor.LayoutLib.YAxisLib.Title { Text = Units.ConcentrationAxis } } },
+        Legend = new List<Legend> { new() { Orientation = Plotly.Blazor.LayoutLib.LegendLib.OrientationEnum.H, X = 0m, Y = -0.15m } }
+    };
+
+    private IList<ITrace> _data = new List<ITrace>();
+
+    protected override void OnParametersSet()
+    {
+        _data = BuildTraces();
+        _dirty = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_dirty && _chart is not null)
+        {
+            _dirty = false;
+            await _chart.React();
+        }
+    }
+
+    private List<ITrace> BuildTraces()
+    {
+        var xO2  = new List<object>(); var yO2  = new List<object>();
+        var xB5  = new List<object>(); var yB5  = new List<object>();
+        var xNH3 = new List<object>(); var yNH3 = new List<object>();
+
+        double L = 0;
+        for (int i = 0; i < Segments.Count && i < Results.Count; i++)
+        {
+            var seg = Segments[i];
+            if (!seg.Plot) continue;
+            var r = Results[i];
+            for (int j = 0; j < r.X.Length; j++)
+            {
+                xO2.Add(L + r.X[j]);  yO2.Add(r.O[j]);
+                xB5.Add(L + r.X[j]);  yB5.Add(r.B5[j]);
+                xNH3.Add(L + r.X[j]); yNH3.Add(r.N[j]);
+            }
+            L += seg.L;
+        }
+
+        return new List<ITrace>
+        {
+            new Scatter { Name = Units.O2Legend,    Mode = ModeFlag.Lines, X = xO2,  Y = yO2,
+                          Line = new Line { Color = "#1f77b4" } },
+            new Scatter { Name = Units.BZT5Legend,  Mode = ModeFlag.Lines, X = xB5,  Y = yB5,
+                          Line = new Line { Color = "#ff7f0e" } },
+            new Scatter { Name = Units.NAmmoniaLegend, Mode = ModeFlag.Lines, X = xNH3, Y = yNH3,
+                          Line = new Line { Color = "#d62728" } }
+        };
+    }
+}

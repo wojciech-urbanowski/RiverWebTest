@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="River.Core.Tests/River.Core.Tests.csproj" />
+  <Project Path="River.Core/River.Core.csproj" />
+  <Project Path="River.Web/River.Web.csproj" />
+</Solution>

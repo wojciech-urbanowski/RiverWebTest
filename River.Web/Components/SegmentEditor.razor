@@ -1,0 +1,84 @@
+@* Edytor pojedynczego odcinka. Odpowiednik FramePart.cs.
+   Trzy pionowe kolumny: parametry hydrauliczne, warunki początkowe, źródło zanieczyszczeń + odpływ. *@
+
+<MudPaper Class="pa-3 mb-2" Elevation="2">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-2">
+        <MudText Typo="Typo.subtitle1"><b>Odcinek @Number</b></MudText>
+        <MudSpacer />
+        <MudCheckBox T="bool" Value="Vm.Plot" ValueChanged="v => Vm.Plot = v" Label="Rysuj na profilu" Dense="true" />
+    </MudStack>
+
+    <MudGrid Spacing="2">
+        @* Kolumna 1 — parametry hydrauliczne *@
+        <MudItem xs="12" sm="4">
+            <MudStack Spacing="1">
+                <NumberField Label="Długość" Unit="@Units.Kilometer"
+                             Value="Vm.L" ValueChanged="v => Vm.L = v" />
+                <NumberField Label="Natężenie przepływu" Unit="@Units.CubicMeterPerSecond"
+                             Value="Vm.Q" ValueChanged="v => Vm.Q = v" />
+                <NumberField Label="Prędkość przepływu" Unit="@Units.KilometerPerHour"
+                             Value="Vm.V" ValueChanged="v => Vm.V = v" />
+                <NumberField Label="Temperatura" Unit="@Units.Celsius"
+                             Value="Vm.T" ValueChanged="v => Vm.T = v" />
+                <MudNumericField T="int" Label="Ilość punktów"
+                                 Value="Vm.N" ValueChanged="v => Vm.N = v"
+                                 Min="1" Max="1000"
+                                 Variant="Variant.Outlined" Margin="Margin.Dense" />
+            </MudStack>
+        </MudItem>
+
+        @* Kolumna 2 — warunki początkowe *@
+        <MudItem xs="12" sm="4">
+            <MudStack Spacing="1">
+                <MudCheckBox T="bool" Value="Vm.IsInitial" ValueChanged="v => Vm.IsInitial = v"
+                             Label="Odcinek początkowy" Dense="true" />
+                <NumberField Label="BZT5" Unit="@Units.GramO2PerM3" Disabled="!Vm.IsInitial"
+                             Value="Vm.InitB" ValueChanged="v => Vm.InitB = v" />
+                <NumberField Label="N-NH3" Unit="@Units.GramNPerM3" Disabled="!Vm.IsInitial"
+                             Value="Vm.InitN" ValueChanged="v => Vm.InitN = v" />
+                <NumberField Label="Deficyt tlenu" Unit="@Units.GramO2PerM3" Disabled="!Vm.IsInitial"
+                             Value="Vm.InitDeficit" ValueChanged="v => Vm.InitDeficit = v" />
+                <MudSelect T="int" Label="Odpływ do"
+                           Value="Vm.OutletTo" ValueChanged="v => Vm.OutletTo = v"
+                           Variant="Variant.Outlined" Margin="Margin.Dense" Dense="true">
+                    <MudSelectItem T="int" Value="0">Brak połączenia</MudSelectItem>
+                    @for (int i = 1; i <= MaxOutletDelta; i++)
+                    {
+                        var delta = i;
+                        <MudSelectItem T="int" Value="@delta">Odcinek @(Number + delta)</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudStack>
+        </MudItem>
+
+        @* Kolumna 3 — źródło zanieczyszczeń *@
+        <MudItem xs="12" sm="4">
+            <MudStack Spacing="1">
+                <MudSelect T="PollutionSource" Label="Źródło zanieczyszczeń"
+                           Value="Vm.Source" ValueChanged="v => Vm.Source = v"
+                           Variant="Variant.Outlined" Margin="Margin.Dense" Dense="true">
+                    <MudSelectItem T="PollutionSource" Value="PollutionSource.None">Brak</MudSelectItem>
+                    <MudSelectItem T="PollutionSource" Value="PollutionSource.Point">Punktowe</MudSelectItem>
+                    <MudSelectItem T="PollutionSource" Value="PollutionSource.Linear">Liniowe</MudSelectItem>
+                </MudSelect>
+                <NumberField Label="Przepływ" Unit="@Units.CubicMeterPerDay" Disabled="@SrcDisabled"
+                             Value="Vm.SrcQDay" ValueChanged="v => Vm.SrcQDay = v" />
+                <NumberField Label="BZT5" Unit="@Units.GramO2PerM3" Disabled="@SrcDisabled"
+                             Value="Vm.SrcB" ValueChanged="v => Vm.SrcB = v" />
+                <NumberField Label="N-NH3" Unit="@Units.GramNPerM3" Disabled="@SrcDisabled"
+                             Value="Vm.SrcN" ValueChanged="v => Vm.SrcN = v" />
+                <NumberField Label="Stężenie tlenu" Unit="@Units.GramO2PerM3" Disabled="@SrcDisabled"
+                             Value="Vm.SrcO" ValueChanged="v => Vm.SrcO = v" />
+            </MudStack>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+@code {
+    [Parameter, EditorRequired] public SegmentVm Vm { get; set; } = default!;
+    [Parameter, EditorRequired] public int Number { get; set; }
+    /// <summary>Maksymalny dopuszczalny <c>OutletTo</c> dla tego odcinka (= TotalSegments - Number).</summary>
+    [Parameter, EditorRequired] public int MaxOutletDelta { get; set; }
+
+    private bool SrcDisabled => Vm.Source == PollutionSource.None;
+}

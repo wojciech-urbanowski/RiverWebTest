@@ -1,0 +1,20 @@
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="PwrTheme.Theme" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1" Dense="true" Style="height: 68px; padding-top: 6px; padding-bottom: 6px;">
+        <a href="https://pwr.edu.pl" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; height: 100%;">
+            <img src="img/logo-pwr.png" alt="Politechnika Wrocławska" style="height: 58px; display: block;" />
+        </a>
+        <MudSpacer />
+        <MudText Typo="Typo.h6">Przemiany zanieczyszczeń w rzece</MudText>
+    </MudAppBar>
+
+    <MudMainContent Style="padding-top: 68px;">
+        @Body
+    </MudMainContent>
+</MudLayout>

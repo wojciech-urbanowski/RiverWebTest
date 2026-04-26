@@ -1,0 +1,10 @@
+Parametry modelu
+k1; 0,5; 1/d
+k2; 0,3; 1/d
+k3; 0,25; 1/d
+k4; 0,3; 1/d
+rB; 1; g/m3/d
+rAP-rAR; 1; g/m2/d
+
+Odc.; L; t; Q; BZT; BZT5; N-NH3; O2
+-; km; d; m3/s; gO2/m3; gO2/m3; gN-NH3/m3; gO2/m3

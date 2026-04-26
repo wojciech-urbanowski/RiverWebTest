@@ -1,0 +1,53 @@
+@* Lewy górny panel: globalne parametry modelu + przyciski.
+   Odpowiednik panelLU + buttonAdd/buttonRemove/buttonOK z FormMain. *@
+
+<MudPaper Class="pa-3" Elevation="1">
+    <MudStack Spacing="2">
+
+        <ParamRow Label="k1 - stała szybkości biochemicznego rozkładu zanieczyszczeń organicznych"
+                  Unit="@Units.PerDay"
+                  Value="Vm.K1"
+                  ValueChanged="v => Vm.K1 = v" />
+
+        <ParamRow Label="k2 - współczynnik reaeracji"
+                  Unit="@Units.PerDay"
+                  Value="Vm.K2"
+                  ValueChanged="v => Vm.K2 = v" />
+
+        <ParamRow Label="k3 - stała szybkości usuwania substancji organicznych na drodze sedymentacji"
+                  Unit="@Units.PerDay"
+                  Value="Vm.K3"
+                  ValueChanged="v => Vm.K3 = v" />
+
+        <ParamRow Label="k4 - stała szybkości nitryfikacji"
+                  Unit="@Units.PerDay"
+                  Value="Vm.K4"
+                  ValueChanged="v => Vm.K4 = v" />
+
+        <ParamRow Label="rB - współczynnik zapotrzebowania tlenu przez osady denne"
+                  Unit="@Units.PerDayPerM3"
+                  Value="Vm.RB"
+                  ValueChanged="v => Vm.RB = v" />
+
+        <ParamRow Label="rAP-rAR - szybkość dostarczania tlenu przez mikroorganizmy"
+                  Unit="@Units.PerDayPerM3"
+                  Value="Vm.RAP"
+                  ValueChanged="v => Vm.RAP = v" />
+
+        <MudStack Row="true" Spacing="2" Class="mt-2">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnAdd">Dodaj odcinek</MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="OnRemove" Disabled="!CanRemove">Usuń odcinek</MudButton>
+            <MudSpacer />
+            <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="OnCompute" StartIcon="@Icons.Material.Filled.PlayArrow">Licz!</MudButton>
+        </MudStack>
+
+    </MudStack>
+</MudPaper>
+
+@code {
+    [Parameter, EditorRequired] public GlobalParamsVm Vm { get; set; } = default!;
+    [Parameter] public bool CanRemove { get; set; }
+    [Parameter] public EventCallback OnAdd { get; set; }
+    [Parameter] public EventCallback OnRemove { get; set; }
+    [Parameter] public EventCallback OnCompute { get; set; }
+}

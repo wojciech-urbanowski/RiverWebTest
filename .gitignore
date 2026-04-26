@@ -2,4 +2,7 @@
 # Ten plik .gitignore został utworzony automatycznie przez Microsoft(R) Visual Studio.
 ################################################################################
 
-/.vs/River.slnx
+.vs/
+bin/
+obj/
+*.user
